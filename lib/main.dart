@@ -80,8 +80,24 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            Image.network('$url'),
-            ElevatedButton(onPressed: _changeImage, child: Text("Change Image")),
+        AnimatedContainer(
+            duration: Duration(milliseconds: 1500),
+
+            width: 200,
+            height: 200,
+   
+
+                      
+            child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            
+            children: [
+                  Image.network(url),
+            ],
+            ),
+        ),
+        ElevatedButton(onPressed: _changeImage, child: Text("Change Image")),
+
 
           ],
         ),
