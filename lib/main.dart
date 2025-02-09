@@ -7,13 +7,11 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
@@ -25,18 +23,34 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
-
-
   final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   int _counter = 0;
   var urlBoolean = true;
   var url = 'https://commkit.gsu.edu/files/2019/06/PrimaryLogo2color.jpg';
+
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    );
+
+    _controller.forward(); 
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -44,33 +58,36 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _changeImage(){
+  void _changeImage() {
     setState(() {
-      if (urlBoolean == true){
+      if (urlBoolean == true) {
         urlBoolean = false;
         url = 'https://commkit.gsu.edu/files/2023/03/gsu-with-pantherhead.png';
-      }
-      else{
-        urlBoolean = true; 
+      } else {
+        urlBoolean = true;
         url = 'https://commkit.gsu.edu/files/2019/06/PrimaryLogo2color.jpg';
       }
     });
+
+    _controller.reset();  
+    _controller.forward(); 
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-
         title: Text(widget.title),
       ),
       body: Center(
-
         child: Column(
-
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
@@ -78,36 +95,28 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
             ),
-        AnimatedContainer(
-            duration: Duration(milliseconds: 1500),
-
-            width: 200,
-            height: 200,
-   
-
-                      
-            child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            
-            children: [
-                  Image.network(url),
-            ],
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: Image.network(
+                url,
+                width: 200,
+                height: 200,
+              ),
             ),
-        ),
-        ElevatedButton(onPressed: _changeImage, child: Text("Change Image")),
-
-
+            ElevatedButton(
+              onPressed: _changeImage,
+              child: const Text("Change Image"),
+            ),
           ],
         ),
-
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
-      ), 
+      ),
     );
   }
 }
+
